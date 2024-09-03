@@ -1,0 +1,11 @@
+{
+  "name": "code-behind",
+  "version": "1.0.0",
+  "description": "",
+  "main": "../Olimpijade_Projekat/index.js",
+  "scripts": {
+    "start": "node ../Olimpijade_Projekat/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "private": true
+}
