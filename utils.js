@@ -1,16 +1,12 @@
-// utils.js
 
 const fs = require('fs');
 
-// Load JSON data from file
 const loadJSON = (filePath) => {
     return JSON.parse(fs.readFileSync(filePath, 'utf-8'));
 };
 
-// Normalize team names to avoid mismatches
 const normalizeTeamName = (name) => name.trim().toLowerCase();
 
-// Calculate initial form based on exhibition matches
 const calculateInitialForm = (exhibitions, teams) => {
     const teamForm = {};
 
@@ -28,14 +24,13 @@ const calculateInitialForm = (exhibitions, teams) => {
 
         const team = teams.find(t => t.ISOCode === teamCode);
         if (team) {
-            teamForm[team.Team] = form;  // Store form using the exact Team name
+            teamForm[team.Team] = form;
         }
     }
 
     return teamForm;
 };
 
-// Simulate a match result with form taken into account
 const simulateMatch = (team1, team2, teamForm) => {
     const team1Form = teamForm[team1.Team];
     const team2Form = teamForm[team2.Team];
@@ -47,13 +42,11 @@ const simulateMatch = (team1, team2, teamForm) => {
     const rankingDifference = team1.FIBARanking - team2.FIBARanking;
     const formDifference = (team1Form || 0) - (team2Form || 0);
 
-    // Limit the impact of the adjustment to avoid unrealistic results
     const adjustment = Math.max(-20, Math.min(20, Math.floor((rankingDifference + formDifference) / 2)));
 
     const baseScore1 = 80 + Math.floor(Math.random() * 21);
     const baseScore2 = 80 + Math.floor(Math.random() * 21);
 
-    // Calculate the final scores with adjustments
     const score1 = Math.max(0, baseScore1 + adjustment);
     const score2 = Math.max(0, baseScore2 - adjustment);
 
@@ -62,7 +55,6 @@ const simulateMatch = (team1, team2, teamForm) => {
         [team2.Team]: score2
     };
 
-    // Update form based on match outcome
     const scoreDifference = score1 - score2;
     if (scoreDifference > 0) {
         teamForm[team1.Team] = (teamForm[team1.Team] || 0) + scoreDifference + 10;
@@ -75,7 +67,6 @@ const simulateMatch = (team1, team2, teamForm) => {
     return result;
 };
 
-// Rank teams based on points, then point difference, then points scored
 const rankTeams = (teams) => {
     return teams.sort((a, b) => {
         if (b.points !== a.points) return b.points - a.points;
@@ -86,7 +77,6 @@ const rankTeams = (teams) => {
     });
 };
 
-// Initialize group results based on the loaded groups
 const initializeGroupResults = (groups) => {
     const groupResults = {};
     for (const group in groups) {
@@ -103,7 +93,6 @@ const initializeGroupResults = (groups) => {
     return groupResults;
 };
 
-// Simulate all matches in the group stage
 const simulateGroupStage = (groups, groupResults, teamForm) => {
     for (const group in groups) {
         const teams = groups[group];
@@ -135,7 +124,6 @@ const simulateGroupStage = (groups, groupResults, teamForm) => {
     }
 };
 
-// Simulate knockout matches
 const simulateKnockoutMatches = (matches, teamForm) => {
     return matches.map(match => {
         const result = simulateMatch(match.team1, match.team2, teamForm);
@@ -149,11 +137,9 @@ const simulateKnockoutMatches = (matches, teamForm) => {
     });
 };
 
-// Draw quarterfinals based on rankings
 const drawQuarterFinals = (teams) => {
     const pots = [[], [], [], []]; // D, E, F, G
 
-    // Assign teams to pots based on their overall ranking
     teams.forEach(Team => {
         if (Team.overallRank === 1 || Team.overallRank === 2) pots[0].push(Team);
         if (Team.overallRank === 3 || Team.overallRank === 4) pots[1].push(Team);
@@ -163,7 +149,6 @@ const drawQuarterFinals = (teams) => {
 
     const quarterFinals = [];
 
-    // Pair D vs G and E vs F
     quarterFinals.push({ team1: pots[0][0], team2: pots[3][0] });
     quarterFinals.push({ team1: pots[1][0], team2: pots[2][0] });
     quarterFinals.push({ team1: pots[0][1], team2: pots[3][1] });
